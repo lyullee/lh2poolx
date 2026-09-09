@@ -24,8 +24,10 @@ must not be used as a steady source without a separate inventory model.
 ## Install
 
 ```bash
-pip install lh2poolx
+pip install "lh2poolx @ git+https://github.com/lyullee/lh2poolx.git"
 ```
+
+The first PyPI release is not yet published.
 
 ## Minimal use
 
