@@ -12,7 +12,7 @@ from .pool import (
     flash_vapour_fraction,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 __all__ = [
     "__version__", "CONCRETE_CRYOGENIC", "CRITICAL_HEAT_FLUX_W_M2",

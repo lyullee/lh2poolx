@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 - 2026-09-11
+
+- Expanded the README into a route-selection, input, output, downstream-use
+  and reproducibility guide.
+- Clarified that the observed-footprint route is a conditional source
+  envelope, not an inferred impact/deposition history or uncertainty interval.
+
 ## 0.1.1 - 2026-09-11
 
 - Added evaluate_observed_footprint_source, which converts a declared
