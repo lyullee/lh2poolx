@@ -21,6 +21,38 @@ predict impingement, splashing, droplet transport, drainage, barriers, or
 transient pool spreading.  A confined result reports liquid accumulation and
 must not be used as a steady source without a separate inventory model.
 
+## Observed-footprint route
+
+Some records constrain a ground footprint more reliably than they constrain
+the liquid fraction transferred from the release to the ground. In this case,
+evaluate_observed_footprint_source converts a declared circular-equivalent
+radius into a heat-limited evaporation source on the declared solid substrate:
+
+    from lh2poolx import evaluate_observed_footprint_source
+
+    lower = evaluate_observed_footprint_source(
+        equivalent_radius_m=0.5, elapsed_s=300.0
+    )
+    upper = evaluate_observed_footprint_source(
+        equivalent_radius_m=1.0, elapsed_s=300.0
+    )
+    print(lower.area_m2, lower.evaporation_rate_kg_s)
+    print(upper.area_m2, upper.evaporation_rate_kg_s)
+
+This is a conditional source route, not an inverse impact model. It does not
+accept a release rate or deposition_fraction, and does not reconstruct pool
+growth, inventory, liquid deposition, splash/droplet transport, drainage or
+the footprint history. If a record gives an extent range, calculate both
+bounds and retain the resulting source range; do not select a midpoint or fit
+an unobserved deposition fraction.
+
+For example, the FFI large-scale LH2 report describes vertical-release pools
+as remaining within roughly 0.5-1.0 m of the release point, while also noting
+that fog prevented a precise visual verification. That record can support a
+0.5-1.0 m conditional radial-extent envelope, not a single observed pool
+area, evaporation history or deposition fraction. See the
+[FFI report](https://www.ffi.no/publikasjoner/arkiv/large-scale-leakage-of-liquid-hydrogen-lh2-tests-related-to-bunkering-and-maritime-use-of-liquid-hydrogen/21-03101.pdf).
+
 ## Install
 
 ```bash

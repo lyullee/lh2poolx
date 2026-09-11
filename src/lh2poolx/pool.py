@@ -65,6 +65,32 @@ class PoolSource:
     source_status: str
 
 
+@dataclass(frozen=True)
+class ObservedFootprintSource:
+    """Heat-limited source for a declared, observed pool footprint.
+
+    equivalent_radius_m [m] is the radius of the circular-equivalent area
+    supplied by the analyst. required_liquid_ground_rate_kg_s [kg s-1] is the
+    quasi-steady liquid inflow that would sustain the calculated evaporation.
+    It is not a measured deposition rate.
+
+    This route deliberately does not accept LH2Release or deposition_fraction.
+    It converts an independently declared footprint into a conditional
+    evaporation source and leaves jet impact, rainout and the release-to-ground
+    handoff outside the calculation.
+    """
+
+    elapsed_s: float
+    equivalent_radius_m: float
+    area_m2: float
+    pool_temperature_K: float
+    latent_heat_J_kg: float
+    evaporative_flux_kg_m2_s: float
+    evaporation_rate_kg_s: float
+    required_liquid_ground_rate_kg_s: float
+    source_status: str
+
+
 def flash_vapour_fraction(storage_pressure_barg: float, *,
                           ambient_pressure_Pa: float = 101325.0) -> float:
     """Isenthalpic saturated-liquid LH2 flash fraction at ambient pressure."""
@@ -145,4 +171,70 @@ def evaluate_pool_source(release: LH2Release, *, elapsed_s: float,
         confined=confined,
         source_status=("quasi_steady_equilibrium" if not confined else
                        "confined_pool_requires_inventory_model"),
+    )
+
+
+def evaluate_observed_footprint_source(
+    *, equivalent_radius_m: float, elapsed_s: float,
+    substrate: Substrate = CONCRETE_CRYOGENIC,
+    ambient_temperature_K: float = 282.0,
+    ambient_pressure_Pa: float = 101325.0,
+    critical_heat_flux_W_m2: float | None = CRITICAL_HEAT_FLUX_W_M2,
+) -> ObservedFootprintSource:
+    """Convert a declared circular-equivalent LH2 footprint into a source term.
+
+    The specified footprint is held fixed only for this quasi-steady source
+    evaluation. The function calculates the heat-limited evaporation rate on
+    the declared solid substrate at elapsed_s; it does not infer a liquid
+    deposition fraction, pool inventory, pool-growth history or footprint
+    trajectory.
+
+    This route is useful when an experiment or site record constrains a
+    footprint more directly than it constrains the release-to-ground handoff.
+    If an observation reports a range, evaluate each bound separately rather
+    than fitting or silently selecting a central radius.
+    """
+    if (not math.isfinite(equivalent_radius_m) or
+            equivalent_radius_m <= 0.0):
+        raise ValueError("equivalent_radius_m must be finite and > 0")
+    if not math.isfinite(elapsed_s) or elapsed_s <= 0.0:
+        raise ValueError("elapsed_s must be finite and > 0")
+    if (not math.isfinite(ambient_temperature_K) or
+            ambient_temperature_K <= 0.0):
+        raise ValueError("ambient_temperature_K must be finite and > 0")
+    if (not math.isfinite(ambient_pressure_Pa) or
+            ambient_pressure_Pa <= 0.0):
+        raise ValueError("ambient_pressure_Pa must be finite and > 0")
+
+    pool_temperature = float(CP.PropsSI(
+        "T", "P", ambient_pressure_Pa, "Q", 0, "Hydrogen"
+    ))
+    latent_heat = float(
+        CP.PropsSI("H", "P", ambient_pressure_Pa, "Q", 1, "Hydrogen")
+        - CP.PropsSI("H", "P", ambient_pressure_Pa, "Q", 0, "Hydrogen")
+    )
+    evaporative_flux = _ground_flux(
+        substrate=substrate,
+        latent_heat_J_kg=latent_heat,
+        ambient_temperature_K=ambient_temperature_K,
+        pool_temperature_K=pool_temperature,
+        elapsed_s=elapsed_s,
+        critical_heat_flux_W_m2=critical_heat_flux_W_m2,
+    )
+    if evaporative_flux <= 0.0:
+        raise ValueError(
+            "evaporative flux is zero; an observed-footprint source is undefined"
+        )
+    area = math.pi * equivalent_radius_m * equivalent_radius_m
+    evaporation_rate = area * evaporative_flux
+    return ObservedFootprintSource(
+        elapsed_s=elapsed_s,
+        equivalent_radius_m=equivalent_radius_m,
+        area_m2=area,
+        pool_temperature_K=pool_temperature,
+        latent_heat_J_kg=latent_heat,
+        evaporative_flux_kg_m2_s=evaporative_flux,
+        evaporation_rate_kg_s=evaporation_rate,
+        required_liquid_ground_rate_kg_s=evaporation_rate,
+        source_status="observed_footprint_conditional_source",
     )
