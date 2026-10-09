@@ -223,3 +223,9 @@ jet-to-ground handoff.
 LH2PoolX is released under the MIT License. Cite the released software version
 and the experimental and heat-transfer sources used in an analysis. Citation
 metadata are provided in [CITATION.cff](CITATION.cff).
+
+## Research reproducibility update 0.1.3
+
+The released model equations and public API are unchanged from 0.1.2.
+The [model equations and code map](docs/model-equations.md) describe the actual
+implementation, input boundary, numerical operators and inventory accounting.

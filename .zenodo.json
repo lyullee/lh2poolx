@@ -1,0 +1,27 @@
+{
+  "title": "LH2PoolX",
+  "description": "Quasi-steady liquid-hydrogen evaporation sources with explicit release-to-ground assumptions. This documentation release preserves the v0.1.2 numerical methods and API. It adds the equations, code map, matched-input study context and software citation metadata.",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Lee, Ugwiyeon",
+      "orcid": "0009-0008-8976-5363"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "liquid hydrogen",
+    "pool evaporation",
+    "source term",
+    "post-shutoff evaporation",
+    "process safety"
+  ],
+  "version": "0.1.3",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/lyullee/lh2poolx/tree/v0.1.3",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

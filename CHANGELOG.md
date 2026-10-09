@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 — 2026-10-09
+
+- Model equations, implementation map and citation metadata updated.
+- No solver equations, physical parameters or numerical results changed.
+
+
 ## 0.1.2 - 2026-09-11
 
 - Expanded the README into a route-selection, input, output, downstream-use
