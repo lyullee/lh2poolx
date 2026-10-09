@@ -229,3 +229,9 @@ metadata are provided in [CITATION.cff](CITATION.cff).
 The released model equations and public API are unchanged from 0.1.2.
 The [model equations and code map](docs/model-equations.md) describe the actual
 implementation, input boundary, numerical operators and inventory accounting.
+
+## Archived release
+
+Version DOI: https://doi.org/10.5281/zenodo.23257978
+
+All versions: https://doi.org/10.5281/zenodo.23257977
